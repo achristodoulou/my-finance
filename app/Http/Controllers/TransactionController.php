@@ -2,14 +2,15 @@
 
 use App\Models\Category;
 use App\Helpers\TransactionHelper;
+use Maatwebsite\Excel\Facades\Excel;
 use Request;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 class TransactionController extends Controller {
 
     public function files()
     {
-        $files = Storage::disk('transactions')->files();
+        $files = $this->getTransactionFiles();
 
         return view('transaction.files', ['files' => $files]);
     }
@@ -24,6 +25,8 @@ class TransactionController extends Controller {
         $transactions_path = storage_path() . '/transactions';
         $filename = date('YmdHis');
         Request::file('transaction_file')->move($transactions_path, $filename);
+
+        Excel::create($transactions_path . '/' . $filename, function($excel) {})->store('csv');
 
         return $this->files();
     }
@@ -122,17 +125,19 @@ class TransactionController extends Controller {
                 if(!isset($report[$year][$month]))
                     $report[$year][$month] = [];
 
-                if(!isset($report[$year][$month][$category]))
-                    $report[$year][$month][$category] = 0;
+                if(!isset($report[$year][$month][$category]['total']))
+                    $report[$year][$month][$category]['total'] = 0;
 
-                $report[$year][$month][$category] += $transaction->amount_debited ?: $transaction->amount_credited;
+                $report[$year][$month][$category]['total'] += $transaction->amount_debited ?: $transaction->amount_credited;
+                $report[$year][$month][$category]['transactions'][] = $transaction;
             }
             else
             {
-                if(!isset($report[$year][$month]['other']))
-                    $report[$year][$month]['other'] = 0;
+                if(!isset($report[$year][$month]['other']['total']))
+                    $report[$year][$month]['other']['total'] = 0;
 
-                $report[$year][$month]['other'] += $transaction->amount_debited ?: $transaction->amount_credited;
+                $report[$year][$month]['other']['total'] += $transaction->amount_debited ?: $transaction->amount_credited;
+                $report[$year][$month]['other']['transactions'][] = $transaction;
             }
 
             $report_year_month_amounts[$year][$month] = $this->calculateTotal($report_year_month_amounts[$year][$month],
@@ -144,7 +149,7 @@ class TransactionController extends Controller {
                                                                  $transaction->amount_credited);
         }
 
-        return view('transaction.transactions', ['report' => $report, 'yearly_total' => $report_year_amounts, 'monthly_total' => $report_year_month_amounts]);
+        return view('transaction.transactions_from_file', ['report' => $report, 'yearly_total' => $report_year_amounts, 'monthly_total' => $report_year_month_amounts]);
     }
 
     function calculateTotal($total, $debitAmount = 0, $creditAmount = 0)
@@ -176,5 +181,18 @@ class TransactionController extends Controller {
         }
 
         return  null;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTransactionFiles()
+    {
+        $files = Storage::disk('transactions')->files();
+        foreach ($files as $idx => $file) {
+            if (substr($file, 0, 1) == '.')
+                unset($files[$idx]);
+        }
+        return $files;
     }
 }

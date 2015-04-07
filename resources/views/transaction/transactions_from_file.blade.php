@@ -5,11 +5,12 @@
         <div class="row">
             <div class="col-md-10 col-md-offset-1">
                 <div class="panel panel-default">
-                    <div class="panel-heading">Transactions by Category</div>
+                    <div class="panel-heading">Transactions by Category (source: file)</div>
 
                     <div class="panel-body">
 
                         <table class="table">
+                            <?php $i = 1; ?>
                             @foreach($report as $year => $data)
                                 <tr class="info">
                                     <td colspan="3">
@@ -25,15 +26,26 @@
                                                 {{--<small style="font-weight: bold">(&euro;{{ $monthly_total[$year][$month] }})</small>--}}
                                             </h4></td>
                                     </tr>
-                                    @foreach($transactions as $category => $amount)
+                                    @foreach($transactions as $category => $data)
                                         <tr>
-                                            <td>{{ strtoupper($category) }}</td>
-                                            <td>{{ $amount }}</td>
-                                            <td>% on total amount of current month</td>
+                                            <td><a href="#" onclick="javascript: toggleTransactions('row_{{ $year . $month . $i }}'); return false;">{{ strtoupper($category) }}</a></td>
+                                            <td>{{ $data['total'] }}</td>
+                                            <td>
+                                                0%
+                                            </td>
                                         </tr>
-                                        <tr>
-                                            <td colspan="3">List of transactions</td>
+                                        <tr id="row_{{ $year . $month . $i }}" style="display: none">
+                                            <td colspan="4">
+                                                @foreach($data['transactions'] as $t)
+                                                    <div>
+                                                        {{ $t->getDate() }} |
+                                                        {{ $t->description }} |
+                                                        {{ $t->amount_credited ?: $t->amount_debited }}
+                                                    </div>
+                                                @endforeach
+                                            </td>
                                         </tr>
+                                        <?php $i++; ?>
                                     @endforeach
                                 @endforeach
                             @endforeach
@@ -44,4 +56,11 @@
             </div>
         </div>
     </div>
+
+    <script type="text/javascript">
+        function toggleTransactions(id)
+        {
+            $('#' + id).toggle(100);
+        }
+    </script>
 @endsection

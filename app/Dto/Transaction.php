@@ -26,6 +26,11 @@ class Transaction{
         return $this;
     }
 
+    public function getDate()
+    {
+        return $this->date->format('Y-m-d');
+    }
+
     private function convertToUtf8($string)
     {
         return Utf8::toAscii($string);
