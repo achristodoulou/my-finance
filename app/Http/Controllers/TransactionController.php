@@ -1,36 +1,62 @@
 <?php namespace App\Http\Controllers;
 
+use App\Helpers\FileHelper;
 use App\Models\Category;
 use App\Helpers\TransactionHelper;
-use Maatwebsite\Excel\Facades\Excel;
 use Request;
-use Illuminate\Support\Facades\Storage;
 
 class TransactionController extends Controller {
 
+    /**
+     * Load available files page
+     *
+     * @return \Illuminate\View\View
+     */
     public function files()
     {
-        $files = $this->getTransactionFiles();
+        $files = FileHelper::getTransactionFiles();
 
         return view('transaction.files', ['files' => $files]);
     }
 
+    /**
+     * Upload files page
+     *
+     * @return \Illuminate\View\View
+     */
 	public function fileUpload()
 	{
 		return view('transaction.file_upload');
 	}
 
+    /**
+     * Upload files page submission
+     *
+     * @return \Illuminate\View\View
+     */
     public function fileUploadPost()
     {
-        $transactions_path = storage_path() . '/transactions';
-        $filename = date('YmdHis');
-        Request::file('transaction_file')->move($transactions_path, $filename);
-
-        Excel::create($transactions_path . '/' . $filename, function($excel) {})->store('csv');
+        FileHelper::upload(Request::file('transaction_file'));
 
         return $this->files();
     }
 
+    /**
+     * Delete a file submission page
+     *
+     * @param $filename
+     */
+    public function deleteFile($filename)
+    {
+        FileHelper::removeFile($filename);
+    }
+
+    /**
+     * Assign description / labels to categories
+     *
+     * @param $filename
+     * @return \Illuminate\View\View
+     */
     public function addToCategoriesLabelsFromFile($filename)
     {
         $transactions_path = storage_path() . '/transactions';
@@ -70,6 +96,12 @@ class TransactionController extends Controller {
         return view('category.add_to_category', ['categories' => Category::lists('category_name', 'category_name'), 'transactions' => $non_process_transactions, 'counter' => 0]);
     }
 
+    /**
+     * Assign description / labels to categories submission page
+     *
+     * @param $category
+     * @param $label
+     */
     public function addToCategoriesLabelsFromFilePost($category, $label)
     {
         $category = strtolower($category);
@@ -94,6 +126,12 @@ class TransactionController extends Controller {
         $categoryItem->save();
     }
 
+    /**
+     * Transactions page
+     *
+     * @param $filename
+     * @return \Illuminate\View\View
+     */
     public function transactionsFromFile($filename)
     {
         $transactions_path = storage_path() . '/transactions';
@@ -117,7 +155,7 @@ class TransactionController extends Controller {
             if(!isset($report_year_month_amounts[$year][$month]))
                 $report_year_month_amounts[$year][$month] = 0;
 
-            if($category = $this->getCategoryForTransaction($transaction->description))
+            if($category = TransactionHelper::getCategoryName($transaction->description))
             {
                 if(!isset($report[$year]))
                     $report[$year] = [];
@@ -140,59 +178,15 @@ class TransactionController extends Controller {
                 $report[$year][$month]['other']['transactions'][] = $transaction;
             }
 
-            $report_year_month_amounts[$year][$month] = $this->calculateTotal($report_year_month_amounts[$year][$month],
+            $report_year_month_amounts[$year][$month] = TransactionHelper::calculateTotal($report_year_month_amounts[$year][$month],
                                                                             $transaction->amount_debited,
                                                                             $transaction->amount_credited);
 
-            $report_year_amounts[$year]  = $this->calculateTotal($report_year_amounts[$year],
+            $report_year_amounts[$year]  = TransactionHelper::calculateTotal($report_year_amounts[$year],
                                                                  $transaction->amount_debited,
                                                                  $transaction->amount_credited);
         }
 
         return view('transaction.transactions_from_file', ['report' => $report, 'yearly_total' => $report_year_amounts, 'monthly_total' => $report_year_month_amounts]);
-    }
-
-    function calculateTotal($total, $debitAmount = 0, $creditAmount = 0)
-    {
-        if($debitAmount)
-            $total -= $debitAmount;
-        else
-            $total += $creditAmount;
-        return $total;
-    }
-
-    function getCategoryForTransaction($transaction_description)
-    {
-        $transaction_description = strtolower($transaction_description);
-
-        $categories = Category::all()->toArray();
-
-        foreach ($categories as $category)
-        {
-            $labels = explode('|', $category['labels']);
-
-            foreach ($labels as $label)
-            {
-                if(strpos($transaction_description, $label) !== false)
-                {
-                    return $category['category_name'];
-                }
-            }
-        }
-
-        return  null;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getTransactionFiles()
-    {
-        $files = Storage::disk('transactions')->files();
-        foreach ($files as $idx => $file) {
-            if (substr($file, 0, 1) == '.')
-                unset($files[$idx]);
-        }
-        return $files;
     }
 }

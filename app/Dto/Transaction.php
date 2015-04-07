@@ -8,32 +8,28 @@ class Transaction{
      * @var \DateTime
      */
     public $date;
+    public $value_date;
     public $description;
     public $amount_credited;
     public $amount_debited;
     public $amount_remaining_balance;
 
-    public function createFromCoop(array $transaction)
-    {
-        $date = explode('/', $transaction[0]);
-        $new_date = $date[2] . '-' . $date[1] . '-' . $date[0];
-        $this->date = new \DateTime($new_date);
-        $this->description = $this->convertToUtf8($transaction[2]);
-        $this->amount_credited = $transaction[4];
-        $this->amount_debited = $transaction[3];
-        $this->amount_remaining_balance = $transaction[5];
-
-        return $this;
-    }
+    const DATE_FORMAT = 'Y-m-d';
 
     public function getDate()
     {
-        return $this->date->format('Y-m-d');
+        if(!($this->value_date instanceof \DateTime))
+            throw new \Exception('Invalid date format!');
+
+        return $this->date->format(self::DATE_FORMAT);
     }
 
-    private function convertToUtf8($string)
+    public function getValueDate()
     {
-        return Utf8::toAscii($string);
+        if(!($this->value_date instanceof \DateTime))
+            throw new \Exception('Invalid date format!');
+
+        return $this->value_date->format(self::DATE_FORMAT);
     }
 }
 
