@@ -8,6 +8,10 @@ class Transaction{
      * @var \DateTime
      */
     public $date;
+
+    /**
+     * @var \DateTime
+     */
     public $value_date;
     public $description;
     public $amount_credited;

@@ -1,5 +1,6 @@
 <?php namespace App\Helpers;
 
+use App\Dto\Metadata;
 use App\Dto\Transaction;
 use App\Models\Category;
 use Patchwork\Utf8;
@@ -27,10 +28,19 @@ class TransactionHelper {
     public static function getTransactionsFromFile($filename)
     {
         $transactions = [];
+        $current_line = 1;
+        $metadata = FileHelper::getMetadata($filename);
+        $filename_path = storage_path('transactions') . '/' . $filename;
 
-        if (($handle = fopen($filename, "r")) !== FALSE) {
-            while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-                $transactions[] = self::createFromCoop(explode(';', $data[0]));
+        if (($handle = fopen($filename_path, "r")) !== FALSE)
+        {
+            while (($data = fgetcsv($handle)) !== FALSE)
+            {
+                if($current_line >= $metadata->getStartLine())
+                {
+                    $transactions[] = self::createTransaction($metadata, $data[0]);
+                }
+                $current_line++;
             }
         }
 
@@ -38,26 +48,33 @@ class TransactionHelper {
     }
 
     /**
-     * Create a transaction from COOP
+     * Create a transaction from array
      *
-     * @param array $transaction
+     * @param Metadata $metadata
+     * @param string $transaction
      * @return Transaction
      */
-    public static function createFromCoop(array $transaction)
+    public static function createTransaction(Metadata $metadata, $transaction)
     {
+        $transaction = explode($metadata->getSeparator(), $transaction);
+
+        $columns = $metadata->getOrderOfColumns();
+
+        $idx_date = array_search('date', $columns);
+        $idx_value_date = array_search('value_date', $columns);
+        $idx_description = array_search('description', $columns);
+        $idx_debit_amount = array_search('debit_amount', $columns);
+        $idx_credit_amount = array_search('credit_amount', $columns);
+        $idx_remaining_balance = array_search('remaining_balance', $columns);
+
         $obj = new Transaction();
-        $date = explode('/', $transaction[0]);
-        $new_date = $date[2] . '-' . $date[1] . '-' . $date[0];
 
-        $value_date = explode('/', $transaction[1]);
-        $new_value_date = $value_date[2] . '-' . $value_date[1] . '-' . $value_date[0];
-
-        $obj->date = new \DateTime($new_date);
-        $obj->value_date = new \DateTime($new_value_date);
-        $obj->description = Utf8::toAscii($transaction[2]);
-        $obj->amount_credited = $transaction[4];
-        $obj->amount_debited = $transaction[3];
-        $obj->amount_remaining_balance = $transaction[5];
+        $obj->date = \DateTime::createFromFormat($metadata->getDateFormat(), $transaction[$idx_date]);
+        $obj->value_date = \DateTime::createFromFormat($metadata->getDateFormat(), $transaction[$idx_value_date]);
+        $obj->description = Utf8::toAscii($transaction[$idx_description]);
+        $obj->amount_debited = $transaction[$idx_debit_amount];
+        $obj->amount_credited = $transaction[$idx_credit_amount];
+        $obj->amount_remaining_balance = $transaction[$idx_remaining_balance];
 
         return $obj;
     }
@@ -95,7 +112,7 @@ class TransactionHelper {
             $labels = explode('|', $category['labels']);
 
             foreach ($labels as $label) {
-                if (strpos($input_label, $label) !== false) {
+                if (preg_match("/($label?)/", $input_label)) {
                     return $category['category_name'];
                 }
             }

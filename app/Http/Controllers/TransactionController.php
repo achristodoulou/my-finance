@@ -3,6 +3,7 @@
 use App\Helpers\FileHelper;
 use App\Models\Category;
 use App\Helpers\TransactionHelper;
+use Illuminate\Support\Facades\Input;
 use Request;
 
 class TransactionController extends Controller {
@@ -36,9 +37,23 @@ class TransactionController extends Controller {
      */
     public function fileUploadPost()
     {
-        FileHelper::upload(Request::file('transaction_file'));
+        FileHelper::upload(Request::file('transaction_file'),
+            [
+                'separator' => Input::get('separator'),
+                'start_line' => Input::get('start_line'),
+                'source' => Input::get('source'),
+                'date_format' => Input::get('date_format'),
+                'columns' => [
+                    Input::get('col_1'),
+                    Input::get('col_2'),
+                    Input::get('col_3'),
+                    Input::get('col_4'),
+                    Input::get('col_5'),
+                    Input::get('col_6')
+                ]
+            ]);
 
-        return $this->files();
+        return redirect()->route('files');
     }
 
     /**
@@ -59,9 +74,7 @@ class TransactionController extends Controller {
      */
     public function addToCategoriesLabelsFromFile($filename)
     {
-        $transactions_path = storage_path() . '/transactions';
-
-        $transactions = TransactionHelper::getTransactionsFromFile($transactions_path . '/' . $filename);
+        $transactions = TransactionHelper::getTransactionsFromFile($filename);
 
         $non_process_transactions = [];
 
@@ -77,7 +90,8 @@ class TransactionController extends Controller {
                 $_labels = explode('|', $category['labels']);
                 foreach($_labels as $label)
                 {
-                    if (!empty($description) && strpos($description, $label) !== false) {
+                    $word = $description . $transactions[$i]->amount_debited . $transactions[$i]->amount_credited;
+                    if (!empty($description) && preg_match("/($label?)/", $word)) {
                         $found = true;
                         break;
                     }
@@ -99,13 +113,13 @@ class TransactionController extends Controller {
     /**
      * Assign description / labels to categories submission page
      *
-     * @param $category
-     * @param $label
+     * @internal param $category
+     * @internal param $label
      */
-    public function addToCategoriesLabelsFromFilePost($category, $label)
+    public function addToCategoriesLabelsFromFilePost()
     {
-        $category = strtolower($category);
-        $label = strtolower($label);
+        $category = strtolower(Input::get('category'));
+        $label = strtolower(urldecode(Input::get('label')));
 
         $categoryItem = Category::where('category_name', '=', $category)->first();
 
@@ -134,9 +148,7 @@ class TransactionController extends Controller {
      */
     public function transactionsFromFile($filename)
     {
-        $transactions_path = storage_path() . '/transactions';
-
-        $transactions = TransactionHelper::getTransactionsFromFile($transactions_path . '/' . $filename);
+        $transactions = TransactionHelper::getTransactionsFromFile($filename);
 
         $report = [];
 
@@ -155,7 +167,9 @@ class TransactionController extends Controller {
             if(!isset($report_year_month_amounts[$year][$month]))
                 $report_year_month_amounts[$year][$month] = 0;
 
-            if($category = TransactionHelper::getCategoryName($transaction->description))
+            $word = $transaction->description . $transaction->amount_debited . $transaction->amount_credited;
+
+            if($category = TransactionHelper::getCategoryName($word))
             {
                 if(!isset($report[$year]))
                     $report[$year] = [];

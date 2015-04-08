@@ -26,7 +26,7 @@ Route::post('fileUpload', ['uses' => 'TransactionController@fileUploadPost']);
 Route::get('file/delete/{filename}', ['as' => 'fileDelete', 'uses' => 'TransactionController@deleteFile']);
 
 Route::get('categories/file/{filename}', ['as' => 'categories_from_file', 'uses' => 'TransactionController@addToCategoriesLabelsFromFile']);
-Route::post('categories/save/{category}/{label}', ['as' => 'category_labels_save', 'uses' => 'TransactionController@addToCategoriesLabelsFromFilePost']);
+Route::post('categories/action/save', ['as' => 'category_labels_save', 'uses' => 'TransactionController@addToCategoriesLabelsFromFilePost']);
 
 Route::get('report/{filename}', ['as' => 'transactions_from_file', 'uses' => 'TransactionController@transactionsFromFile']);
 
