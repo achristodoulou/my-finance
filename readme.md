@@ -1,18 +1,44 @@
-## Laravel PHP Framework
+## My Finance
 
-[![Build Status](https://travis-ci.org/laravel/framework.svg)](https://travis-ci.org/laravel/framework)
-[![Total Downloads](https://poser.pugx.org/laravel/framework/downloads.svg)](https://packagist.org/packages/laravel/framework)
-[![Latest Stable Version](https://poser.pugx.org/laravel/framework/v/stable.svg)](https://packagist.org/packages/laravel/framework)
-[![Latest Unstable Version](https://poser.pugx.org/laravel/framework/v/unstable.svg)](https://packagist.org/packages/laravel/framework)
-[![License](https://poser.pugx.org/laravel/framework/license.svg)](https://packagist.org/packages/laravel/framework)
+This is a small application that can help you import all your financial transactions from different sources and help you create different groups
+in order to group your transactions and in the end to produce a monthly report that will show your expenses or income as well.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable, creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as authentication, routing, sessions, queueing, and caching.
+Please keep in mind that this is still in beta version.
 
-Laravel is accessible, yet powerful, providing powerful tools needed for large, robust applications. A superb inversion of control container, expressive migration system, and tightly integrated unit testing support give you the tools you need to build any application with which you are tasked.
+## Requirements
 
-## Official Documentation
+PHP 5.5 and above
 
-Documentation for the framework can be found on the [Laravel website](http://laravel.com/docs).
+## Installation
+
+git clone git@github.com:andreas22/my-finance.git
+
+cd my-finance
+
+composer update
+
+php -S localhost:8000 -t public/
+
+and last, open your browser at http://localhost:8000 and have fun :)
+
+
+## Demo
+
+go to new file
+
+upload sample-file.csv which can be found in the root of the clone application
+
+go to categories
+
+and create 2 categories as follows:
+
+name: atm  / labels: atm
+name: supermarket / labels: supermarket
+
+go to my files
+
+click [view report] next to the uploaded file
+
 
 ## Contributing
 
@@ -20,4 +46,4 @@ Thank you for considering contributing to the Laravel framework! The contributio
 
 ### License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
+My finance is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
