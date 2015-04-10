@@ -2,7 +2,7 @@
 
 use Patchwork\Utf8;
 
-class Transaction{
+class TransactionDto{
 
     /**
      * @var \DateTime
@@ -17,6 +17,8 @@ class Transaction{
     public $amount_credited;
     public $amount_debited;
     public $amount_remaining_balance;
+    public $source;
+    public $filename = null;
 
     const DATE_FORMAT = 'Y-m-d';
 
@@ -34,6 +36,19 @@ class Transaction{
             throw new \Exception('Invalid date format!');
 
         return $this->value_date->format(self::DATE_FORMAT);
+    }
+
+    public function getHash()
+    {
+        return md5(
+            $this->getDate() .
+            $this->getValueDate() .
+            $this->amount_credited .
+            $this->amount_debited .
+            $this->amount_remaining_balance .
+            $this->source .
+            $this->description
+        );
     }
 }
 

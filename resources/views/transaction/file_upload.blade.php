@@ -24,7 +24,7 @@
 
                         <br />
                         <fieldset>
-                            <legend>File Properties</legend>
+                            <legend>Advanced Properties</legend>
 
                             <p><b>Specify the order of the columns inside the csv file.</b></p>
 

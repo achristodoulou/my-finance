@@ -2,23 +2,43 @@
 
 class Metadata {
 
-    private $start_line;
-    private $source;
-    private $separator;
-    private $date_format;
-    private $columns;
+    private $metadata = [];
 
     function __construct($start_line = 1,
-                         $source = 'Unknown',
+                         $filename = '',
                          $separator = ';',
                          $date_format = 'Y-m-d',
-                         array $columns
+                         $source,
+                         array $columns,
+                         $created_at
     ){
-        $this->start_line = $start_line;
-        $this->source = $source;
-        $this->separator = $separator;
-        $this->date_format = $date_format;
-        $this->columns = $columns;
+        $this->metadata['start_line'] = $start_line;
+        $this->metadata['source'] = $source;
+        $this->metadata['separator'] = $separator;
+        $this->metadata['date_format'] = $date_format;
+        $this->metadata['columns'] = $columns;
+        $this->metadata['filename'] = $filename;
+        $this->metadata['created_at'] = $created_at;
+    }
+
+    /**
+     * Get date created at
+     *
+     * @return string
+     */
+    public function getCreatedAt()
+    {
+        return $this->metadata['created_at'];
+    }
+
+    /**
+     * Get list of metadata
+     *
+     * @return array
+     */
+    public function getMetadata()
+    {
+        return $this->metadata;
     }
 
     /**
@@ -26,7 +46,7 @@ class Metadata {
      */
     public function getOrderOfColumns()
     {
-        return $this->columns;
+        return $this->metadata['columns'];
     }
 
 
@@ -35,7 +55,7 @@ class Metadata {
      */
     public function getSeparator()
     {
-        return $this->separator;
+        return $this->metadata['separator'];
     }
 
     /**
@@ -43,15 +63,16 @@ class Metadata {
      */
     public function getStartLine()
     {
-        return (int) $this->start_line;
+        return (int) $this->metadata['start_line'];
     }
 
     /**
+     * Source can be bank, cash etc
      * @return string
      */
     public function getSource()
     {
-        return $this->source;
+        return $this->metadata['source'];
     }
 
     /**
@@ -59,8 +80,14 @@ class Metadata {
      */
     public function getDateFormat()
     {
-        return $this->date_format;
+        return $this->metadata['date_format'];
     }
 
-
+    /**
+     * @return string
+     */
+    public function getFilename()
+    {
+        return $this->metadata['filename'];
+    }
 }

@@ -40,10 +40,12 @@ class FileHelper {
             $metadata = json_decode(Storage::disk('transactions')->get($metadataFilename), true);
             return new Metadata(
                 $metadata['start_line'],
-                $metadata['source'],
+                $metadata['filename'],
                 $metadata['separator'],
                 $metadata['date_format'],
-                $metadata['columns']
+                $metadata['source'],
+                $metadata['columns'],
+                $metadata['created_at']
             );
         }
 
@@ -57,15 +59,17 @@ class FileHelper {
 
     /**
      * @param UploadedFile $file
-     * @param array $metadata
+     * @param Metadata|array $metadata
      */
-    public static function upload(UploadedFile $file, array $metadata)
+    public static function upload(UploadedFile $file, Metadata $metadata)
     {
         $transactions_path = storage_path() . '/transactions';
         $filename = date('YmdHis');
         $file->move($transactions_path, $filename);
 
-        Storage::disk('transactions')->put(self::getMetadataFilename($filename), json_encode($metadata));
+        $metadataFilename = self::getMetadataFilename($filename);
+
+        Storage::disk('transactions')->put($metadataFilename, json_encode($metadata->getMetadata(), JSON_PRETTY_PRINT));
     }
 
     public static function removeFile($filename)

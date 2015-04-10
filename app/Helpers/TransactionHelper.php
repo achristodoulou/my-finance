@@ -1,7 +1,7 @@
 <?php namespace App\Helpers;
 
 use App\Dto\Metadata;
-use App\Dto\Transaction;
+use App\Dto\TransactionDto;
 use App\Models\Category;
 use Patchwork\Utf8;
 
@@ -9,7 +9,7 @@ class TransactionHelper {
     /**
      * Get list of descriptions from a transaction list
      *
-     * @param \App\Dto\Transaction[] $transactions
+     * @param \App\Dto\TransactionDto[] $transactions
      * @return array
      */
     public static function getDescriptions(array $transactions)
@@ -23,7 +23,7 @@ class TransactionHelper {
 
     /**
      * @param $filename
-     * @return Transaction[]
+     * @return TransactionDto[]
      */
     public static function getTransactionsFromFile($filename)
     {
@@ -38,7 +38,7 @@ class TransactionHelper {
             {
                 if($current_line >= $metadata->getStartLine())
                 {
-                    $transactions[] = self::createTransaction($metadata, $data[0]);
+                    $transactions[] = self::transactionTransform($metadata, $data[0], $metadata->getSource(), $filename);
                 }
                 $current_line++;
             }
@@ -52,9 +52,11 @@ class TransactionHelper {
      *
      * @param Metadata $metadata
      * @param string $transaction
-     * @return Transaction
+     * @param $filename
+     * @param string $source , file source
+     * @return TransactionDto
      */
-    public static function createTransaction(Metadata $metadata, $transaction)
+    public static function transactionTransform(Metadata $metadata, $transaction, $source, $filename = '')
     {
         $transaction = explode($metadata->getSeparator(), $transaction);
 
@@ -67,7 +69,7 @@ class TransactionHelper {
         $idx_credit_amount = array_search('credit_amount', $columns);
         $idx_remaining_balance = array_search('remaining_balance', $columns);
 
-        $obj = new Transaction();
+        $obj = new TransactionDto();
 
         $obj->date = \DateTime::createFromFormat($metadata->getDateFormat(), $transaction[$idx_date]);
         $obj->value_date = \DateTime::createFromFormat($metadata->getDateFormat(), $transaction[$idx_value_date]);
@@ -75,6 +77,8 @@ class TransactionHelper {
         $obj->amount_debited = $transaction[$idx_debit_amount];
         $obj->amount_credited = $transaction[$idx_credit_amount];
         $obj->amount_remaining_balance = $transaction[$idx_remaining_balance];
+        $obj->source = $source;
+        $obj->filename = $filename;
 
         return $obj;
     }

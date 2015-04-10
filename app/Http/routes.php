@@ -20,15 +20,21 @@ Route::controllers([
 	'password' => 'Auth\PasswordController',
 ]);
 
-Route::get('files', ['as' => 'files', 'uses' => 'TransactionController@files']);
-Route::get('fileUpload', ['as' => 'fileUpload', 'uses' => 'TransactionController@fileUpload']);
-Route::post('fileUpload', ['uses' => 'TransactionController@fileUploadPost']);
-Route::get('file/delete/{filename}', ['as' => 'fileDelete', 'uses' => 'TransactionController@deleteFile']);
+# Files
 
-Route::get('categories/file/{filename}', ['as' => 'categories_from_file', 'uses' => 'TransactionController@addToCategoriesLabelsFromFile']);
-Route::post('categories/action/save', ['as' => 'category_labels_save', 'uses' => 'TransactionController@addToCategoriesLabelsFromFilePost']);
+Route::get('files', ['as' => 'files', 'uses' => 'FileTransactionController@files']);
+Route::get('fileUpload', ['as' => 'fileUpload', 'uses' => 'FileTransactionController@fileUpload']);
+Route::post('fileUpload', ['uses' => 'FileTransactionController@fileUploadPost']);
+Route::get('file/delete/{filename}', ['as' => 'fileDelete', 'uses' => 'FileTransactionController@deleteFile']);
 
-Route::get('report/{filename}', ['as' => 'transactions_from_file', 'uses' => 'TransactionController@transactionsFromFile']);
+Route::get('categories/file/{filename}', ['as' => 'categories_from_file', 'uses' => 'FileTransactionController@addToCategoriesLabelsFromFile']);
+Route::post('categories/action/save', ['as' => 'category_labels_save', 'uses' => 'FileTransactionController@addToCategoriesLabelsFromFilePost']);
+
+Route::get('report/{filename}', ['as' => 'transactions_from_file', 'uses' => 'FileTransactionController@transactionsFromFile']);
+Route::get('import/{filename}', ['as' => 'import_from_file', 'uses' => 'FileTransactionController@import']);
+Route::post('import/{filename}', ['uses' => 'FileTransactionController@importPost']);
+
+# Categories
 
 Route::get('categories', ['as' => 'categories', 'uses' => 'CategoriesController@index']);
 Route::post('categories/{id}', ['as' => 'category_labels_update', 'uses' => 'CategoriesController@save']);
