@@ -7,11 +7,11 @@ Please keep in mind that this is still in beta version.
 
 ## Requirements
 
-PHP 5.5 and above
+PHP 5.4 and above
 
 ## Installation
 
-git clone git@github.com:andreas22/my-finance.git
+git clone https://github.com/andreas22/my-finance.git
 
 cd my-finance
 
@@ -38,6 +38,10 @@ name: supermarket / labels: supermarket
 go to my files
 
 click [view report] next to the uploaded file
+
+## Faq
+
+Import: functionality for saving transactions from a file, in order to be used for generating a report from different sources.
 
 
 ## Contributing
