@@ -71,8 +71,8 @@ class TransactionHelper {
 
         $obj = new TransactionDto();
 
-        $obj->date = \DateTime::createFromFormat($metadata->getDateFormat(), $transaction[$idx_date]);
-        $obj->value_date = \DateTime::createFromFormat($metadata->getDateFormat(), $transaction[$idx_value_date]);
+        $obj->setDate($transaction[$idx_date], $metadata->getDateFormat());
+        $obj->setValueDate($transaction[$idx_value_date], $metadata->getDateFormat());
         $obj->description = Utf8::toAscii($transaction[$idx_description]);
         $obj->amount_debited = $transaction[$idx_debit_amount];
         $obj->amount_credited = $transaction[$idx_credit_amount];

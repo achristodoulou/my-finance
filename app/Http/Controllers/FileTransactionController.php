@@ -241,7 +241,7 @@ class FileTransactionController extends Controller {
         {
             foreach ($transactions as $transaction)
             {
-                if($transaction->date >= $from_date && $transaction->getDate() <= $to_date)
+                if($transaction->date >= $from_date && $transaction->date <= $to_date)
                 {
                     $list_of_transactions_for_saving[] = $transaction;
                 }

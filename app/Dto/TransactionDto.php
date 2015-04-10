@@ -4,6 +4,7 @@ use Patchwork\Utf8;
 
 class TransactionDto{
 
+    private $id;
     /**
      * @var \DateTime
      */
@@ -21,6 +22,32 @@ class TransactionDto{
     public $filename = null;
 
     const DATE_FORMAT = 'Y-m-d';
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return (int) $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId($id)
+    {
+        $this->id = (int) $id;
+    }
+
+    public function setDate($date, $format = 'Y-m-d')
+    {
+        $this->date = \DateTime::createFromFormat($format, $date);
+    }
+
+    public function setValueDate($date, $format = 'Y-m-d')
+    {
+        $this->value_date = \DateTime::createFromFormat($format, $date);
+    }
 
     public function getDate()
     {
