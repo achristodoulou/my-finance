@@ -15,7 +15,7 @@ git clone git@github.com:andreas22/my-finance.git
 
 cd my-finance
 
-composer update
+composer install
 
 php -S localhost:8000 -t public/
 
