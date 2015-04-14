@@ -1,6 +1,6 @@
 <?php namespace App\Dto;
 
-class Metadata {
+class MetadataDto {
 
     private $metadata = [];
 

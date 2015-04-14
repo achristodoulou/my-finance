@@ -46,3 +46,7 @@ Route::get('transaction/list', ['as' => 'transactions', 'uses' => 'TransactionCo
 Route::post('transaction/update/{id}', ['as' => 'transaction_update', 'uses' => 'TransactionController@update']);
 Route::get('transaction/delete/{id}', ['as' => 'transactions_delete', 'uses' => 'TransactionController@delete']);
 Route::get('report/storage', ['as' => 'transactions_from_storage', 'uses' => 'TransactionController@report']);
+
+# Api
+
+Route::get('api/sources', ['as' => 'api_sources_by_keyword', 'uses' => 'ApiController@getListOfSourcesThatMatch']);

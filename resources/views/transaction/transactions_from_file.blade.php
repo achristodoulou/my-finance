@@ -31,7 +31,7 @@
                                             <td><a href="#" onclick="javascript: toggleTransactions('row_{{ $year . $month . $i }}'); return false;">{{ strtoupper($category) }}</a></td>
                                             <td>{{ $data['total'] }}</td>
                                             <td>
-                                                0%
+
                                             </td>
                                         </tr>
                                         <tr id="row_{{ $year . $month . $i }}" style="display: none">

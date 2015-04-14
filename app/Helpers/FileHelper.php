@@ -1,6 +1,6 @@
 <?php namespace App\Helpers;
 
-use App\Dto\Metadata;
+use App\Dto\MetadataDto;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Storage;
@@ -28,7 +28,7 @@ class FileHelper {
 
     /**
      * @param $filename
-     * @return Metadata
+     * @return MetadataDto
      */
     public static function getMetadata($filename)
     {
@@ -38,7 +38,7 @@ class FileHelper {
         if($metadataFileExists)
         {
             $metadata = json_decode(Storage::disk('transactions')->get($metadataFilename), true);
-            return new Metadata(
+            return new MetadataDto(
                 $metadata['start_line'],
                 $metadata['filename'],
                 $metadata['separator'],
@@ -59,9 +59,9 @@ class FileHelper {
 
     /**
      * @param UploadedFile $file
-     * @param Metadata|array $metadata
+     * @param MetadataDto|array $metadata
      */
-    public static function upload(UploadedFile $file, Metadata $metadata)
+    public static function upload(UploadedFile $file, MetadataDto $metadata)
     {
         $transactions_path = storage_path() . '/transactions';
         $filename = date('YmdHis');

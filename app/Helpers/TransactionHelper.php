@@ -1,6 +1,6 @@
 <?php namespace App\Helpers;
 
-use App\Dto\Metadata;
+use App\Dto\MetadataDto;
 use App\Dto\TransactionDto;
 use App\Models\Category;
 use Patchwork\Utf8;
@@ -50,13 +50,13 @@ class TransactionHelper {
     /**
      * Create a transaction from array
      *
-     * @param Metadata $metadata
+     * @param MetadataDto $metadata
      * @param string $transaction
      * @param $filename
      * @param string $source , file source
      * @return TransactionDto
      */
-    public static function transactionTransform(Metadata $metadata, $transaction, $source, $filename = '')
+    public static function transactionTransform(MetadataDto $metadata, $transaction, $source, $filename = '')
     {
         $transaction = explode($metadata->getSeparator(), $transaction);
 

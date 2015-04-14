@@ -1,9 +1,11 @@
 <?php namespace App\Http\Controllers;
 
-use App\Dto\Metadata;
+use App\Dto\MetadataDto;
 use App\Helpers\FileHelper;
 use App\Models\Category;
 use App\Helpers\TransactionHelper;
+use App\Models\Config;
+use App\Repositories\ConfigRepository;
 use App\Repositories\TransactionsRepository;
 use Illuminate\Support\Facades\Input;
 use Request;
@@ -40,13 +42,15 @@ class FileTransactionController extends Controller {
     public function fileUploadPost()
     {
         $file = Request::file('transaction_file');
+        $source = Input::get('source');
 
-        $metadata = new Metadata(
+
+        $metadata = new MetadataDto(
             Input::get('start_line'),
             $file->getClientOriginalName(),
             Input::get('separator'),
             Input::get('date_format'),
-            Input::get('source'),
+            $source,
             [
                 Input::get('col_1'),
                 Input::get('col_2'),
@@ -59,6 +63,8 @@ class FileTransactionController extends Controller {
         );
 
         FileHelper::upload($file, $metadata);
+
+        ConfigRepository::save('source', $source, $source);
 
         return redirect()->route('files');
     }

@@ -120,4 +120,35 @@
             </div>
         </div>
     </div>
+
+    <script type="text/javascript">
+
+        var results = [];
+
+        function save(num)
+        {
+            var new_category = $('#new_category_' + num).val();
+            var existing_category = $('#existing_category_' + num).val();
+            var label = $('#label_' + num).val();
+            var category = new_category.length > 0 ? new_category : existing_category;
+
+            var url = "{{ URL::route('category_labels_save') }}";
+
+            $.post( url, { category: category, label: encodeURIComponent(label) } );
+
+            $('#row_' + num).hide();
+
+        }
+
+        $(function() {
+
+            $( "#source" ).autocomplete({
+                async: false,
+                source: '{{ URL::route('api_sources_by_keyword') }}',
+                minLength: 2
+            });
+
+        });
+    </script>
+
 @endsection
