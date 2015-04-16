@@ -12,6 +12,20 @@
 
                         {!! Form::open(array('url' => URL::route('fileUpload'), 'enctype' => 'multipart/form-data')) !!}
 
+                        @if(isset($messages) && sizeof($messages->all()) > 0)
+                            <div class="alert alert-danger alert-dismissible" role="alert">
+                                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <strong>Oops! Something went wrong</strong>
+                                <ul>
+                                    @foreach ($messages->all() as $message)
+                                        <li>{{ $message }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+
                         <div class="row">
                             <div class="col-md-10">
                                 <input type="file" class="form-control" name="transaction_file" id="transaction_file" placeholder="Transactions File">

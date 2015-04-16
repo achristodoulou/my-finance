@@ -9,6 +9,8 @@
 
                     <div class="panel-body">
 
+                        @if($report)
+
                         <table class="table">
                             <?php $i = 1; ?>
                             @foreach($report as $year => $data)
@@ -50,6 +52,12 @@
                                 @endforeach
                             @endforeach
                         </table>
+
+                        @else
+
+                            Oops, currently there are no any transactions saved in database. <a href="{{ route('files') }}">Click here</a> if you would like to import from a file.
+
+                        @endif
 
                     </div>
                 </div>

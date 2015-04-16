@@ -17,7 +17,7 @@ class TransactionController extends Controller {
     {
         $transactions = TransactionsRepository::all();
 
-        return view('transaction.index', ['transactions' => $transactions]);
+        return view('transaction.transactions', ['transactions' => $transactions]);
     }
 
     /**

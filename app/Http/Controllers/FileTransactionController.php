@@ -2,13 +2,13 @@
 
 use App\Dto\MetadataDto;
 use App\Helpers\FileHelper;
+use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Helpers\TransactionHelper;
-use App\Models\Config;
 use App\Repositories\ConfigRepository;
 use App\Repositories\TransactionsRepository;
 use Illuminate\Support\Facades\Input;
-use Request;
+use Illuminate\Support\Facades\Session;
 
 class FileTransactionController extends Controller {
 
@@ -31,19 +31,40 @@ class FileTransactionController extends Controller {
      */
 	public function fileUpload()
 	{
-		return view('transaction.file_upload');
+        $data = [];
+
+        if(Session::has('errors'))
+        {
+            $data['messages'] = Session::get('errors');
+        }
+
+		return view('transaction.file_upload', $data);
 	}
 
     /**
      * Upload files page submission
      *
-     * @return \Illuminate\View\View
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function fileUploadPost()
+    public function fileUploadPost(Request $request)
     {
-        $file = Request::file('transaction_file');
-        $source = Input::get('source');
+        $this->validate($request, [
+            'transaction_file' => 'required',
+            'source' => 'required',
+            'start_line' => 'required|digits:1',
+            'separator' => 'required|size:1',
+            'date_format' => 'required',
+            'col_1' => 'required',
+            'col_2' => 'required',
+            'col_3' => 'required',
+            'col_4' => 'required',
+            'col_5' => 'required',
+            'col_6' => 'required',
+        ]);
 
+        $file = $request->file('transaction_file');
+        $source = Input::get('source');
 
         $metadata = new MetadataDto(
             Input::get('start_line'),

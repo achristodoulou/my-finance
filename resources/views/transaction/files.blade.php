@@ -8,6 +8,9 @@
                     <div class="panel-heading">My Files</div>
 
                     <div class="panel-body">
+
+                        @if($files)
+
                         <table class="table table-striped">
                             <thead>
                                 <tr>
@@ -32,6 +35,11 @@
                             </tbody>
                         </table>
 
+                        @else
+
+                            Oops, you have not uploaded any files. <a href="{{ route('fileUpload') }}">Click here</a> if you would like to upload a file.
+
+                        @endif
                     </div>
                 </div>
             </div>
