@@ -23,7 +23,7 @@
                             <?php $i = 0; ?>
                             @foreach($files as $file)
                                 <tr id="row_{{ $i }}">
-                                    <td style="width: 30%">{{ $file['filename']  }}</td>
+                                    <td style="width: 30%">{{ $file['metadata']->getFilename() }} <small>({{ $file['filename']  }})</small></td>
                                     <td style="width: 30%">{{ $file['metadata']->getSource()  }}</td>
                                     <td style="width: 10%"><a class="btn btn-default" href="{{ URL::route('categories_from_file', ['filename' => $file['filename']]) }}">Edit categories</a></td>
                                     <td style="width: 10%"><a class="btn btn-info" href="{{ URL::route('transactions_from_file', ['filename' => $file['filename']]) }}">View report</a></td>
