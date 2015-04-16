@@ -49,7 +49,17 @@
 
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 
-                @include('common.menu')
+                @if (!Auth::guest())
+                <ul class="nav navbar-nav navbar-left">
+                    <li><a href="{{ URL::route('home') }}">Home</a></li>
+                    <li><a href="{{ URL::route('fileUpload') }}">New file</a></li>
+                    <li><a href="{{ URL::route('files') }}">My Files</a></li>
+                    <li><a href="{{ URL::route('categories') }}">Categories</a></li>
+                    <li><a href="{{ URL::route('transactions') }}">Transactions</a></li>
+                    <li><a href="{{ URL::route('transactions_from_storage') }}">Report</a></li>
+                </ul>
+                @endif
+
 
 				<ul class="nav navbar-nav navbar-right">
 					@if (Auth::guest())

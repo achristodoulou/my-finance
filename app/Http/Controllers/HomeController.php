@@ -1,5 +1,10 @@
 <?php namespace App\Http\Controllers;
 
+use App\Helpers\FileHelper;
+use App\Models\Category;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Http\Response;
+
 class HomeController extends Controller {
 
 	/*
@@ -13,24 +18,32 @@ class HomeController extends Controller {
 	|
 	*/
 
-	/**
-	 * Create a new controller instance.
-	 *
-	 * @return void
-	 */
+    /**
+     * Create a new controller instance.
+     *
+     */
 	public function __construct()
 	{
 		$this->middleware('auth');
 	}
 
-	/**
-	 * Show the application dashboard to the user.
-	 *
-	 * @return Response
-	 */
-	public function index()
+    /**
+     * Show the application dashboard to the user.
+     *
+     * @param Authenticatable $user
+     * @return Response
+     */
+	public function index(Authenticatable $user)
 	{
-		return view('home');
+        $files_found = sizeof(FileHelper::getTransactionFiles()) > 0 ? true : false;
+        $categories_found = false;
+
+        if($files_found)
+        {
+            $categories_found = Category::all()->count() > 0 ? true : false;
+        }
+
+		return view('home', ['user' => $user, 'files_found' => $files_found, 'categories_found' => $categories_found]);
 	}
 
 }

@@ -3,6 +3,7 @@
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\RedirectResponse;
+use URL;
 
 class RedirectIfAuthenticated {
 
@@ -13,12 +14,11 @@ class RedirectIfAuthenticated {
 	 */
 	protected $auth;
 
-	/**
-	 * Create a new filter instance.
-	 *
-	 * @param  Guard  $auth
-	 * @return void
-	 */
+    /**
+     * Create a new filter instance.
+     *
+     * @param  Guard $auth
+     */
 	public function __construct(Guard $auth)
 	{
 		$this->auth = $auth;
@@ -35,7 +35,7 @@ class RedirectIfAuthenticated {
 	{
 		if ($this->auth->check())
 		{
-			return new RedirectResponse(url('/home'));
+			return new RedirectResponse(url('/'));
 		}
 
 		return $next($request);
