@@ -1,3 +1,5 @@
+## THIS PROJECT HAS MOVED TO BITBUCKET AT https://bitbucket.org/andreas22/my-finance
+
 ## My Finance
 
 This is a small application that can help you import all your financial transactions from different sources and help you create different groups
